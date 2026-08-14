@@ -1,2 +1,4 @@
 # all vim editor .swp files
 *.swp
+# java bytecode files
+*.class
