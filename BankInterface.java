@@ -28,10 +28,13 @@ public class BankInterface {
                     System.out.print("Enter account holder name: ");
                     String name = scan.nextLine();
 
+                    System.out.print("Enter pan number: ");
+                    String pan = scan.nextLine();
+
                     System.out.print("Enter phone number: ");
                     String phone = scan.nextLine();
 
-                    bank.createAccount(name, phone);
+                    bank.createAccount(name,pan, phone);
                     break;
 
                 case 2:
@@ -51,12 +54,22 @@ public class BankInterface {
                     System.out.print("Enter amount to withdraw: ");
                     double withdrawalAmount = scan.nextDouble();
 
-                    bank.withdrawal(withdrawalAccNo, withdrawalAmount);
+                    scan.nextLine();
+
+                    System.out.print("Enter pan no for secure withdrawal: ");
+                    String withdrawalPan = scan.nextLine();
+
+                    bank.withdrawal(withdrawalAccNo, withdrawalAmount, withdrawalPan);
                     break;
 
                 case 4:
                     System.out.print("Enter sender account number: ");
                     int senderAccNo = scan.nextInt();
+
+                    scan.nextLine();
+
+                    System.out.print("Enter sender PAN: ");
+                    String senderPan = scan.nextLine();
 
                     System.out.print("Enter receiver account number: ");
                     int receiverAccNo = scan.nextInt();
@@ -66,10 +79,11 @@ public class BankInterface {
 
                     bank.transfer(
                         senderAccNo,
+                        senderPan,
                         receiverAccNo,
                         transferAmount
                     );
-                    break;
+    break;
 
                 case 5:
                     System.out.print("Enter account number: ");

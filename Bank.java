@@ -1,6 +1,5 @@
 import java.util.Map;
 import java.util.HashMap;
-
 class Bank	
 {
 	Map<Integer,Account> accounts;
@@ -11,97 +10,120 @@ class Bank
 		accounts = new HashMap<>();
 	}
 		
-	public void createAccount(String name,String phone){
+	public void createAccount(String name,String phone, String pan){
 		
 		int accountNumber = acc_idx++;
-		Account acc = new Account(name, phone);
+		Account acc = new Account(name, phone, pan);
 		accounts.put(accountNumber, acc);
 		System.out.println("Account Sucessfully Created!\n Generated Account number : " +accountNumber);
 	}
 
 	public void deposite(int acc_no, double amount){
-		if (accounts.containsKey(acc_no)){
-			
-			Account acc = accounts.get(acc_no);
 
-			if(acc.getIs_active()){
-
-				acc.deposite(amount);
-				System.out.printf("Deposite of %.2f is Sucessful!\n", amount);
-			
-			}else{
-				System.out.println("Your Account is currently Inactive!");
-			}
-		}	
-		else {
-
-			System.out.println("Account Not Found! Recheck the Account number");
-							
+		if(amount <= 0.0){
+			System.out.println("Please check the entered amount");
+			return;
 		}
+		if(!accounts.containsKey(acc_no)){
+			System.out.println("Account Not Found! Recheck the Account number");
+			return;
+		}
+		Account acc = accounts.get(acc_no);
+
+		if(!acc.getIs_active()){
+			System.out.println("Your Account is currently Inactive");
+			return;
+		}
+		acc.deposite(amount);
+		System.out.printf("Deposite of %.2f is Successful!\n", amount);
+
 	}
 
-	public void withdrawal(int acc_no, double amount){
-		
-		if (accounts.containsKey(acc_no)){
-			Account acc = accounts.get(acc_no);
+	public void withdrawal(int acc_no, double amount, String usr_pan) {
 
-			if (acc.getIs_active()){
-
-				acc.withdrawal(amount);
-				System.out.printf("Withdrawal of %.2f is Sucessful!\n", amount);
-			}
-			else {
-				System.out.println("Your Account is currently Inactive!");
-			}
+		if (amount <= 0) {
+			System.out.println("Please check the entered amount");
+			return;
 		}
-		else{
 
+		if (!accounts.containsKey(acc_no)) {
 			System.out.println("Account Not Found! Recheck the Account number");
+			return;
 		}
 
+		Account acc = accounts.get(acc_no);
+
+		if (!acc.getIs_active()) {
+			System.out.println("Your Account is currently Inactive!");
+			return;
+		}
+
+		if (!usr_pan.equals(acc.getPan())) {
+			System.out.println("Invalid PAN!");
+			return;
+		}
+
+		if (amount > acc.getBalance()) {
+			System.out.println("Insufficient Balance!");
+			return;
+		}
+
+		acc.withdrawal(amount);
+		System.out.printf("Withdrawal of %.2f is Successful!\n", amount);
 	}
 	
-	public void transfer(int acc_no1, int acc_no2, double amount){
+	
+	public void transfer(int senderAccNo, String senderPan, int receiverAccNo, double amount) {
 
-		if(accounts.containsKey(acc_no1) && accounts.containsKey(acc_no2)){
-
-			Account acc1 = accounts.get(acc_no1);
-			Account acc2 = accounts.get(acc_no2);
-
-			if (acc1.getIs_active() && acc2.getIs_active()){
-
-				if (acc1.getBalance() >= amount){
-					acc1.withdrawal(amount);
-					acc2.deposite(amount);
-				
-					System.out.printf("Transfer of %.2f is Sucessful!\n",amount);
-				}
-				else{
-					System.out.println("Insufficient Amount!");
-				}
-			}
-			else {
-				
-				System.out.println("One or Both Accounts are currently Inactive!");
-			}
+		if (amount <= 0) {
+			System.out.println("Please check the amount!");
+			return;
 		}
-		else{
 
-			System.out.println("One or Both Accounts Not Found! Recheck the Account number");
-		
+		if (!accounts.containsKey(senderAccNo)) {
+			System.out.println("Sender Account Not Found! Recheck the Account number");
+			return;
 		}
+
+		if (!accounts.containsKey(receiverAccNo)) {
+			System.out.println("Receiver Account Not Found! Recheck the Account number");
+			return;
+		}
+
+		Account sender = accounts.get(senderAccNo);
+		Account receiver = accounts.get(receiverAccNo);
+
+		if (!sender.getIs_active() || !receiver.getIs_active()) {
+			System.out.println("One or Both Accounts are currently Inactive!");
+			return;
+		}
+
+		if (!senderPan.equals(sender.getPan())) {
+			System.out.println("Invalid PAN!");
+			return;
+		}
+
+		if (sender.getBalance() < amount) {
+			System.out.println("Insufficient Balance!");
+			return;
+		}
+
+		sender.withdrawal(amount);
+		receiver.deposite(amount);
+
+		System.out.printf("Transfer of %.2f is Successful!\n", amount);
 	}
 
 	public void display(int acc_no){
 		
-		if(accounts.containsKey(acc_no)){
+		if(!accounts.containsKey(acc_no)){
 
-			Account acc = accounts.get(acc_no);
-			acc.display();
-		}
-		else{
 			System.out.println("Account Not Found! Recheck the Account number");
-		}	
+
+		}
+		Account acc = accounts.get(acc_no);
+		acc.display();
+			
 	}
 
 }
