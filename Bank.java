@@ -1,6 +1,6 @@
 import java.util.Map;
 import java.util.HashMap;
-class Bank	
+class Bank
 {
 	Map<Integer,Account> accounts;
 	static int acc_idx = 1001;
@@ -9,9 +9,9 @@ class Bank
 
 		accounts = new HashMap<>();
 	}
-		
+
 	public void createAccount(String name,String phone, String pan){
-		
+
 		int accountNumber = acc_idx++;
 		Account acc = new Account(name, phone, pan);
 		accounts.put(accountNumber, acc);
@@ -71,12 +71,17 @@ class Bank
 		acc.withdrawal(amount);
 		System.out.printf("Withdrawal of %.2f is Successful!\n", amount);
 	}
-	
-	
+
+
 	public void transfer(int senderAccNo, String senderPan, int receiverAccNo, double amount) {
 
 		if (amount <= 0) {
 			System.out.println("Please check the amount!");
+			return;
+		}
+
+		if (senderAccNo == receiverAccNo) {
+			System.out.println("Sender and receiver accounts cannot be the same!");
 			return;
 		}
 
@@ -115,15 +120,39 @@ class Bank
 	}
 
 	public void display(int acc_no){
-		
+
 		if(!accounts.containsKey(acc_no)){
 
 			System.out.println("Account Not Found! Recheck the Account number");
-
+            return;
 		}
 		Account acc = accounts.get(acc_no);
 		acc.display();
-			
+
 	}
+
+    public void displayAllAccounts(){
+        if(accounts.isEmpty()){
+
+            System.out.println("No Accounts Found");
+            return;
+        }
+
+        for(Map.Entry<Integer,Account> entry : accounts.entrySet()){
+
+         	Account acc = entry.getValue();
+            System.out.println("------------------------------");
+            System.out.println("Account No           : " + entry.getKey());
+            System.out.println("Account Holder name  : " + acc.getName());
+            System.out.println("Phone                : " + acc.getPhone());
+            System.out.println("------------------------------");
+
+        }
+    }
+
+
+
+
+
 
 }
