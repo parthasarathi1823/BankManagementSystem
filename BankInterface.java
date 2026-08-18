@@ -4,101 +4,43 @@ public class BankInterface {
 
     public static void main(String[] args) {
 
-        Scanner scan = new Scanner(System.in);
         Bank bank = new Bank();
+        Scanner scan = new Scanner(System.in);
 
         while (true) {
 
             System.out.println("\n========== BANK MANAGEMENT SYSTEM ==========");
-            System.out.println("1. Create Account");
-            System.out.println("2. Deposit");
-            System.out.println("3. Withdraw");
-            System.out.println("4. Transfer");
-            System.out.println("5. Display Account");
-            System.out.println("6. Exit");
+            System.out.println("Select the User Panel>");
+            System.out.println("1. Admin Panel");
+            System.out.println("2. Customer Panel");
+            System.out.println("3. Exit Platform");
             System.out.println("============================================");
 
             System.out.print("Enter your choice: ");
+            if (!scan.hasNextInt()) {
+                System.out.println("Invalid input! Please enter a number.");
+                scan.next();
+                continue;
+            }
             int choice = scan.nextInt();
-            scan.nextLine(); // consume newline
 
             switch (choice) {
 
                 case 1:
-                    System.out.print("Enter account holder name: ");
-                    String name = scan.nextLine();
-
-                    System.out.print("Enter pan number: ");
-                    String pan = scan.nextLine();
-
-                    System.out.print("Enter phone number: ");
-                    String phone = scan.nextLine();
-
-                    bank.createAccount(name,pan, phone);
+                    AdminInterface.adminInterface(bank, scan);
                     break;
 
                 case 2:
-                    System.out.print("Enter account number: ");
-                    int depositAccNo = scan.nextInt();
-
-                    System.out.print("Enter amount to deposit: ");
-                    double depositAmount = scan.nextDouble();
-
-                    bank.deposite(depositAccNo, depositAmount);
+                    CustomerInterface.customerInterface(bank, scan);
                     break;
 
                 case 3:
-                    System.out.print("Enter account number: ");
-                    int withdrawalAccNo = scan.nextInt();
-
-                    System.out.print("Enter amount to withdraw: ");
-                    double withdrawalAmount = scan.nextDouble();
-
-                    scan.nextLine();
-
-                    System.out.print("Enter pan no for secure withdrawal: ");
-                    String withdrawalPan = scan.nextLine();
-
-                    bank.withdrawal(withdrawalAccNo, withdrawalAmount, withdrawalPan);
-                    break;
-
-                case 4:
-                    System.out.print("Enter sender account number: ");
-                    int senderAccNo = scan.nextInt();
-
-                    scan.nextLine();
-
-                    System.out.print("Enter sender PAN: ");
-                    String senderPan = scan.nextLine();
-
-                    System.out.print("Enter receiver account number: ");
-                    int receiverAccNo = scan.nextInt();
-
-                    System.out.print("Enter amount to transfer: ");
-                    double transferAmount = scan.nextDouble();
-
-                    bank.transfer(
-                        senderAccNo,
-                        senderPan,
-                        receiverAccNo,
-                        transferAmount
-                    );
-    break;
-
-                case 5:
-                    System.out.print("Enter account number: ");
-                    int displayAccNo = scan.nextInt();
-
-                    bank.display(displayAccNo);
-                    break;
-
-                case 6:
                     System.out.println("Thank you for using the Bank Management System!");
                     scan.close();
                     return;
 
                 default:
-                    System.out.println("Invalid choice! Please try again.");
+                    System.out.println("Invalid choice!");
             }
         }
     }
