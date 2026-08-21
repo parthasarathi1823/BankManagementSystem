@@ -1,64 +1,85 @@
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.HashMap;
-class Bank
-{
-	Map<Integer,Account> accounts;
-	static int acc_idx = 1001;
+
+class Bank {
+
+	private final Map<Integer, Account> accounts;
+	private static int accountIndex = 1001;
 
 	public Bank() {
-
-		accounts = new HashMap<>();
+		accounts = new LinkedHashMap<>();
 	}
 
-	public void createAccount(String name,String phone, String pan){
+	public void createAccount(String name, String phone, String pan) {
+		if (!validateName(name)) {
+			System.out.println(">>> Invalid name! Use letters and spaces only.");
+			System.out.println(">>> Account creation cancelled.");
+			return;
+		}
+		if (!validatePhone(phone)) {
+			System.out.println(">>> Invalid phone! Enter a 10-digit number starting with 6-9.");
+			System.out.println(">>> Account creation cancelled.");
+			return;
+		}
+		if (!validatePan(pan)) {
+			System.out.println(">>> Invalid PAN! Format must be AAAAA9999A.");
+			System.out.println(">>> Account creation cancelled.");
+			return;
+		}
 
-		int accountNumber = acc_idx++;
-		Account acc = new Account(name, phone, pan);
+		int accountNumber = accountIndex++;
+		Account acc = new Account(name, pan, phone);
 		accounts.put(accountNumber, acc);
-		System.out.println("Account Sucessfully Created!\n Generated Account number : " +accountNumber);
+		System.out.println();
+		System.out.println("╔════════════════════════════════════════════╗");
+		System.out.println("║       Account Successfully Created!        ║");
+		System.out.println("╠════════════════════════════════════════════╣");
+		System.out.println("║  Generated Account number : " + String.format("%-12s", accountNumber) + "║");
+		System.out.println("╚════════════════════════════════════════════╝");
 	}
 
-	public void deposite(int acc_no, double amount){
-
-		if(amount <= 0.0){
+	public void deposit(int accountNo, double amount) {
+		if (amount <= 0.0) {
 			System.out.println("Please check the entered amount");
 			return;
 		}
-		if(!accounts.containsKey(acc_no)){
+
+		Account acc = accounts.get(accountNo);
+		if (acc == null) {
 			System.out.println("Account Not Found! Recheck the Account number");
 			return;
 		}
-		Account acc = accounts.get(acc_no);
 
-		if(!acc.getIs_active()){
+		if (!acc.isActive()) {
 			System.out.println("Your Account is currently Inactive");
 			return;
 		}
-		acc.deposite(amount);
-		System.out.printf("Deposite of %.2f is Successful!\n", amount);
 
+		if (acc.deposit(amount)) {
+			System.out.printf("Deposit of %.2f is Successful!%n", amount);
+		} else {
+			System.out.println("Deposit failed! Please check the entered amount");
+		}
 	}
 
-	public void withdrawal(int acc_no, double amount, String usr_pan) {
-
+	public void withdraw(int accountNo, double amount, String userPan) {
 		if (amount <= 0) {
 			System.out.println("Please check the entered amount");
 			return;
 		}
 
-		if (!accounts.containsKey(acc_no)) {
+		Account acc = accounts.get(accountNo);
+		if (acc == null) {
 			System.out.println("Account Not Found! Recheck the Account number");
 			return;
 		}
 
-		Account acc = accounts.get(acc_no);
-
-		if (!acc.getIs_active()) {
+		if (!acc.isActive()) {
 			System.out.println("Your Account is currently Inactive!");
 			return;
 		}
 
-		if (!usr_pan.equals(acc.getPan())) {
+		if (!userPan.equalsIgnoreCase(acc.getPan())) {
 			System.out.println("Invalid PAN!");
 			return;
 		}
@@ -68,13 +89,14 @@ class Bank
 			return;
 		}
 
-		acc.withdrawal(amount);
-		System.out.printf("Withdrawal of %.2f is Successful!\n", amount);
+		if (acc.withdraw(amount)) {
+			System.out.printf("Withdrawal of %.2f is Successful!%n", amount);
+		} else {
+			System.out.println("Withdrawal failed!");
+		}
 	}
 
-
 	public void transfer(int senderAccNo, String senderPan, int receiverAccNo, double amount) {
-
 		if (amount <= 0) {
 			System.out.println("Please check the amount!");
 			return;
@@ -85,25 +107,24 @@ class Bank
 			return;
 		}
 
-		if (!accounts.containsKey(senderAccNo)) {
+		Account sender = accounts.get(senderAccNo);
+		if (sender == null) {
 			System.out.println("Sender Account Not Found! Recheck the Account number");
 			return;
 		}
 
-		if (!accounts.containsKey(receiverAccNo)) {
+		Account receiver = accounts.get(receiverAccNo);
+		if (receiver == null) {
 			System.out.println("Receiver Account Not Found! Recheck the Account number");
 			return;
 		}
 
-		Account sender = accounts.get(senderAccNo);
-		Account receiver = accounts.get(receiverAccNo);
-
-		if (!sender.getIs_active() || !receiver.getIs_active()) {
+		if (!sender.isActive() || !receiver.isActive()) {
 			System.out.println("One or Both Accounts are currently Inactive!");
 			return;
 		}
 
-		if (!senderPan.equals(sender.getPan())) {
+		if (!senderPan.equalsIgnoreCase(sender.getPan())) {
 			System.out.println("Invalid PAN!");
 			return;
 		}
@@ -113,46 +134,102 @@ class Bank
 			return;
 		}
 
-		sender.withdrawal(amount);
-		receiver.deposite(amount);
-
-		System.out.printf("Transfer of %.2f is Successful!\n", amount);
-	}
-
-	public void display(int acc_no){
-
-		if(!accounts.containsKey(acc_no)){
-
-			System.out.println("Account Not Found! Recheck the Account number");
-            return;
+		if (sender.withdraw(amount)) {
+			receiver.deposit(amount);
+			System.out.printf("Transfer of %.2f is Successful!%n", amount);
+		} else {
+			System.out.println("Transfer failed!");
 		}
-		Account acc = accounts.get(acc_no);
-		acc.display();
-
 	}
 
-    public void displayAllAccounts(){
-        if(accounts.isEmpty()){
+	public void display(int accountNo) {
+		Account acc = accounts.get(accountNo);
+		if (acc == null) {
+			System.out.println("Account Not Found! Recheck the Account number");
+			return;
+		}
+		System.out.println("Account No           : " + accountNo);
+		acc.display();
+	}
 
-            System.out.println("No Accounts Found");
-            return;
-        }
+	public void displayAllAccounts() {
+		if (accounts.isEmpty()) {
+			System.out.println("No Accounts Found");
+			return;
+		}
 
-        for(Map.Entry<Integer,Account> entry : accounts.entrySet()){
+		for (Map.Entry<Integer, Account> entry : accounts.entrySet()) {
+			Account acc = entry.getValue();
+			System.out.println("------------------------------");
+			System.out.println("Account No           : " + entry.getKey());
+			System.out.println("Account Holder name  : " + acc.getName());
+			System.out.println("Phone                : " + acc.getPhone());
+			System.out.println("Status               : " + (acc.isActive() ? "Active" : "Inactive"));
+			System.out.println("------------------------------");
+		}
+	}
 
-         	Account acc = entry.getValue();
-            System.out.println("------------------------------");
-            System.out.println("Account No           : " + entry.getKey());
-            System.out.println("Account Holder name  : " + acc.getName());
-            System.out.println("Phone                : " + acc.getPhone());
-            System.out.println("------------------------------");
+	public boolean validateName(String name) {
+		return name != null && !name.trim().isEmpty() && name.trim().matches("[a-zA-Z ]+");
+	}
 
-        }
-    }
+	public boolean validatePhone(String phone) {
+		return phone != null && phone.matches("[6-9][0-9]{9}");
+	}
 
+	public boolean validatePan(String pan) {
+		return pan != null && pan.toUpperCase().matches("[A-Z]{5}[0-9]{4}[A-Z]");
+	}
 
+	public void modifyAccountDetails(int accountNo, String name, String phone) {
+		Account acc = accounts.get(accountNo);
+		if (acc == null) {
+			System.out.println("Account Not Found! Recheck the Account number");
+			return;
+		}
 
+		if ("-".equals(name) && "-".equals(phone)) {
+			System.out.println("No changes requested.");
+			return;
+		}
 
+		boolean updated = false;
 
+		if (!"-".equals(name)) {
+			if (validateName(name)) {
+				acc.setName(name.trim());
+				updated = true;
+			} else {
+				System.out.println("Invalid name! Name was not updated.");
+			}
+		}
 
+		if (!"-".equals(phone)) {
+			if (validatePhone(phone)) {
+				acc.setPhone(phone);
+				updated = true;
+			} else {
+				System.out.println("Invalid phone! Phone was not updated.");
+			}
+		}
+
+		if (updated) {
+			System.out.println("Profile Updated!");
+			acc.display();
+		} else {
+			System.out.println("No changes were applied.");
+		}
+	}
+
+	public void changeActivity(int accountNo) {
+		Account acc = accounts.get(accountNo);
+		if (acc == null) {
+			System.out.println("Account Not Found! Recheck the Account number");
+			return;
+		}
+
+		acc.setActive(!acc.isActive());
+		System.out.println("Account Activity status changed!");
+		System.out.println("Account Status: " + (acc.isActive() ? "Active" : "Inactive"));
+	}
 }
