@@ -2,3 +2,6 @@
 *.swp
 # java bytecode files
 *.class
+
+.idea/
+*.iml
