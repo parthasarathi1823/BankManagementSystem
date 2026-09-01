@@ -1,8 +1,8 @@
 # 🏦 Bank Management System
 
-**Version:** `v1.0.1`
+**Version:** `v1.1.0`
 
-A **console-based Bank Management System built in Java** to practice Object-Oriented Programming, collections, input handling, validation, and Git/GitHub development workflows.
+A **console-based Bank Management System built in Java** to practice Object-Oriented Programming, inheritance, polymorphism, collections, input handling, validation, and Git/GitHub development workflows.
 
 The app is split into an **Admin Panel** and a **Customer Panel**, with boxed menus and highlighted notices for important user-facing messages.
 
@@ -10,17 +10,17 @@ The app is split into an **Admin Panel** and a **Customer Panel**, with boxed me
 
 ### Customer
 
-* Create a new bank account (with input rules shown before entry)
+* Create a **Savings** or **Current** account (with input rules shown before entry)
 * Automatically generate account numbers (starting from `1001`)
 * Deposit money
-* Withdraw money (PAN required)
-* Transfer money between accounts (sender PAN required)
-* Display account details
+* Withdraw money (PAN required; account-type rules enforced)
+* Transfer money between accounts (sender PAN required; account-type rules enforced)
+* Display account details (including calculated interest)
 * Clear **Account creation cancelled** notice when creation fails for any reason
 
 ### Admin
 
-* Display all accounts
+* Display all accounts (with account type)
 * Update customer details (name / phone; enter `-` to keep existing value)
 * Toggle account activity status (Active / Inactive)
 
@@ -28,10 +28,26 @@ The app is split into an **Admin Panel** and a **Customer Panel**, with boxed me
 
 * Account active/inactive status checks on transactions
 * Balance, amount, and account-existence validation
-* Insufficient-balance validation
 * PAN verification before secure transactions
 * Name, phone, and PAN format validation on account creation / profile update
 * Highlighted menus and alerts (`>>>` prefix for errors/notices)
+
+## 🏛️ Account Types
+
+### Savings Account
+
+* Opening balance: **₹1000.00** (minimum balance)
+* Minimum balance must be maintained after every withdrawal
+* Interest rate: **4%** per annum (calculated on current balance)
+* No overdraft
+
+### Current Account
+
+* Opening balance: **₹0.00**
+* Overdraft limit: **₹5000.00**
+* No interest earned
+
+Withdrawal and transfer limits are enforced by each account subclass via polymorphic `withdraw()` — the `Bank` class delegates to the account object rather than applying a generic balance check.
 
 ## 🛠️ Technologies Used
 
@@ -47,7 +63,9 @@ The app is split into an **Admin Panel** and a **Customer Panel**, with boxed me
 ```text
 BankManagementSystem/
 │
-├── Account.java
+├── Account.java            # Abstract base account
+├── SavingsAccount.java     # Savings account (min balance + interest)
+├── CurrentAccount.java     # Current account (overdraft, no interest)
 ├── Bank.java
 ├── BankInterface.java      # Main entry + panel selection
 ├── AdminInterface.java     # Admin panel
@@ -58,23 +76,27 @@ BankManagementSystem/
 
 ### `Account.java`
 
-Represents an individual bank account.
-
-It stores:
+Abstract base class for all account types. Stores:
 
 * Account holder name
 * PAN number (immutable after creation)
 * Phone number
-* Balance (default opening balance: `1000.00`)
-* Account type (`savings`)
+* Balance
 * Account activity status
 
-It provides operations such as:
+Provides shared operations (`deposit`, `display`, getters/setters) and declares abstract methods for account-type-specific behavior:
 
-* Deposit
-* Withdrawal
-* Display account details
-* Update name / phone / activity status
+* `withdraw(double amount)` — enforced per subclass
+* `getAccountType()` — returns the account type label
+* `calculateIntrest()` — returns calculated interest on current balance
+
+### `SavingsAccount.java`
+
+Extends `Account`. Enforces a **₹1000 minimum balance** on withdrawals and calculates **4% interest** on the current balance.
+
+### `CurrentAccount.java`
+
+Extends `Account`. Starts at **₹0** and allows withdrawals up to a **₹5000 overdraft limit**. Earns no interest.
 
 ### `Bank.java`
 
@@ -143,6 +165,7 @@ Only when the PAN matches can the withdrawal or transfer proceed.
 * Name: letters and spaces only (non-empty)
 * Phone: 10 digits, starting with `6`–`9`
 * PAN: `AAAAA9999A`
+* Account type: `1` (Savings) or `2` (Current) only
 * Empty fields or failed validation → **Account creation cancelled**
 
 ### Deposit
@@ -157,7 +180,9 @@ Only when the PAN matches can the withdrawal or transfer proceed.
 * Account must exist
 * Account must be active
 * PAN must match
-* Sufficient balance must be available
+* Account-type rules enforced by subclass:
+  * **Savings:** balance after withdrawal must stay ≥ ₹1000
+  * **Current:** balance may go negative up to ₹5000 overdraft limit
 
 ### Transfer
 
@@ -166,7 +191,7 @@ Only when the PAN matches can the withdrawal or transfer proceed.
 * Sender and receiver accounts must exist
 * Both accounts must be active
 * Sender PAN authentication is required
-* Sender must have sufficient balance
+* Sender account-type withdrawal rules apply (same as withdrawal)
 
 ### Admin profile update
 
@@ -239,9 +264,19 @@ java BankInterface
 
 ## 🧠 OOP Concepts Practiced
 
+### Inheritance & Polymorphism
+
+```text
+Account (abstract)
+ ├── SavingsAccount
+ └── CurrentAccount
+```
+
+`Bank` stores and operates on `Account` references. Withdrawal rules differ per subclass — the correct `withdraw()` implementation is called at runtime.
+
 ### Encapsulation
 
-Account fields are kept private, with access through getters/setters such as:
+Account fields are kept private/protected, with access through getters/setters such as:
 
 ```java
 getBalance()
@@ -252,21 +287,9 @@ setPhone()
 setActive()
 ```
 
-### Classes and Objects
+### Abstraction
 
-```text
-Account
-Bank
-BankInterface
-AdminInterface
-CustomerInterface
-```
-
-### Constructors
-
-```java
-public Account(String name, String pan, String phone)
-```
+`Account` declares abstract methods (`withdraw`, `getAccountType`, `calculateIntrest`) that each subclass must implement.
 
 ### Composition
 
@@ -322,6 +345,7 @@ This project is being developed as a practical way to learn and apply:
 
 * Java fundamentals
 * Object-Oriented Programming
+* Inheritance and polymorphism
 * Collections
 * Input handling
 * Validation
@@ -336,6 +360,36 @@ This project is being developed as a practical way to learn and apply:
 ---
 
 ## 📜 Changelog
+
+### [v1.1.0] — 2026-09-01
+
+Account-type inheritance, polymorphic withdrawal rules, and validation fixes.
+
+#### Added
+
+* `SavingsAccount` and `CurrentAccount` subclasses extending abstract `Account`
+* Account type selection during account creation (`1` = Savings, `2` = Current)
+* Savings minimum-balance enforcement (₹1000) on withdrawals
+* Current account overdraft support (up to ₹5000)
+* `calculateIntrest()` implemented per account type and shown in account display
+* Account type shown in creation success message and admin account listing
+* Input validation for account type (numeric check + allowed values)
+
+#### Changed
+
+* `Account` refactored to abstract class with abstract `withdraw()`, `getAccountType()`, `calculateIntrest()`
+* `Bank.createAccount()` now accepts account type code and creates the correct subclass
+* `Bank.withdraw()` and `Bank.transfer()` delegate balance/overdraft checks to subclass `withdraw()` (polymorphism)
+* Withdrawal/transfer failure messages now come from the account subclass (no duplicate generic message)
+* README updated to document account types, inheritance architecture, and new validation rules
+
+#### Fixed
+
+* Invalid account type (e.g. `0`, `99`) no longer silently creates a Current Account
+* Non-integer account type input no longer crashes with `InputMismatchException`
+* Current account overdraft was blocked by a generic balance check in `Bank` — now works correctly
+* Scanner buffer handling after account type input (`nextLine()` added)
+* Account number no longer consumed when account type validation fails
 
 ### [v1.0.1] — 2026-08-21
 
