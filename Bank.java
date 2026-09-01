@@ -10,7 +10,7 @@ class Bank {
 		accounts = new LinkedHashMap<>();
 	}
 
-	public void createAccount(String name, String phone, String pan) {
+	public void createAccount(String name, String phone, String pan, int acc_code) {
 		if (!validateName(name)) {
 			System.out.println(">>> Invalid name! Use letters and spaces only.");
 			System.out.println(">>> Account creation cancelled.");
@@ -26,15 +26,28 @@ class Bank {
 			System.out.println(">>> Account creation cancelled.");
 			return;
 		}
+		if (acc_code != 1 && acc_code != 2) {
+			System.out.println(">>> Invalid account type! Please enter 1 or 2.");
+			System.out.println(">>> Account creation cancelled.");
+			return;
+		}
 
 		int accountNumber = accountIndex++;
-		Account acc = new Account(name, pan, phone);
+		Account acc;
+
+		if (acc_code == 1) {
+			acc = new SavingsAccount(name, pan, phone);
+		} else {
+			acc = new CurrentAccount(name, pan, phone);
+		}
 		accounts.put(accountNumber, acc);
+
 		System.out.println();
 		System.out.println("╔════════════════════════════════════════════╗");
 		System.out.println("║       Account Successfully Created!        ║");
 		System.out.println("╠════════════════════════════════════════════╣");
 		System.out.println("║  Generated Account number : " + String.format("%-12s", accountNumber) + "║");
+		System.out.println("║  Account Type               : " + String.format("%-12s", acc.getAccountType()) + "║");
 		System.out.println("╚════════════════════════════════════════════╝");
 	}
 
@@ -84,15 +97,9 @@ class Bank {
 			return;
 		}
 
-		if (amount > acc.getBalance()) {
-			System.out.println("Insufficient Balance!");
-			return;
-		}
 
 		if (acc.withdraw(amount)) {
 			System.out.printf("Withdrawal of %.2f is Successful!%n", amount);
-		} else {
-			System.out.println("Withdrawal failed!");
 		}
 	}
 
@@ -129,16 +136,10 @@ class Bank {
 			return;
 		}
 
-		if (sender.getBalance() < amount) {
-			System.out.println("Insufficient Balance!");
-			return;
-		}
 
 		if (sender.withdraw(amount)) {
 			receiver.deposit(amount);
 			System.out.printf("Transfer of %.2f is Successful!%n", amount);
-		} else {
-			System.out.println("Transfer failed!");
 		}
 	}
 
@@ -165,6 +166,7 @@ class Bank {
 			System.out.println("Account Holder name  : " + acc.getName());
 			System.out.println("Phone                : " + acc.getPhone());
 			System.out.println("Status               : " + (acc.isActive() ? "Active" : "Inactive"));
+			System.out.println("Account Type         : " + acc.getAccountType());
 			System.out.println("------------------------------");
 		}
 	}

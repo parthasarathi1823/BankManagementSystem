@@ -1,10 +1,9 @@
-public class Account {
+abstract class Account {
 
 	private String name;
 	private final String pan;
-	private double balance;
+	protected double balance;
 	private String phone;
-	private final String accountType;
 	private boolean isActive;
 
 	public Account(String name, String pan, String phone) {
@@ -12,7 +11,6 @@ public class Account {
 		this.pan = pan;
 		this.balance = 1000.0;
 		this.phone = phone;
-		this.accountType = "savings";
 		this.isActive = true;
 	}
 
@@ -24,13 +22,8 @@ public class Account {
 		return true;
 	}
 
-	public boolean withdraw(double amount) {
-		if (amount <= 0 || amount > balance) {
-			return false;
-		}
-		balance -= amount;
-		return true;
-	}
+	public abstract boolean withdraw(double amount);
+
 
 	public void display() {
 		System.out.println("====== Account Details ======");
@@ -38,7 +31,6 @@ public class Account {
 		System.out.println("PAN No              : " + pan);
 		System.out.println("Balance             : " + String.format("%.2f", balance));
 		System.out.println("Phone               : " + phone);
-		System.out.println("Account Type        : " + accountType);
 		System.out.println("Activity Status     : " + (isActive ? "Active" : "Inactive"));
 	}
 
@@ -62,9 +54,6 @@ public class Account {
 		return pan;
 	}
 
-	public String getAccountType() {
-		return accountType;
-	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -77,4 +66,9 @@ public class Account {
 	public void setActive(boolean status) {
 		this.isActive = status;
 	}
+
+	public abstract String getAccountType();
+
+	public abstract double calculateIntrest();
 }
+

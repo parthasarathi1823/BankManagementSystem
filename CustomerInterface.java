@@ -55,7 +55,26 @@ public class CustomerInterface {
                         break;
                     }
 
-                    bank.createAccount(name, phone, pan);
+
+                    System.out.println("Enter the Account Type");
+                    System.out.println("  1. Savings Account");
+                    System.out.println("  2. Current Account");
+                    if (!scan.hasNextInt()) {
+                        System.out.println(">>> Invalid account type! Please enter 1 or 2.");
+                        BankInterface.discardToken(scan);
+                        System.out.println(">>> Account creation cancelled.");
+                        break;
+                    }
+                    int index = scan.nextInt();
+                    scan.nextLine();
+
+                    if (index != 1 && index != 2) {
+                        System.out.println(">>> Invalid account type! Please enter 1 or 2.");
+                        System.out.println(">>> Account creation cancelled.");
+                        break;
+                    }
+
+                    bank.createAccount(name, phone, pan, index);
                     break;
 
                 case 2:
