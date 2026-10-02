@@ -1,10 +1,12 @@
-class SavingsAccount extends Account{
+package account;
+
+public class SavingsAccount extends Account {
 
 	private static final double MIN_BALANCE = 1000.0;
 	private static final double INTREST_RATE = 4.0;
 	private static final String ACCOUNT_TYPE = "Savings Account";
 
-	SavingsAccount(String name, String pan, String phone) {
+	public SavingsAccount(String name, String pan, String phone) {
 		super(name, pan, phone);
 		this.balance = MIN_BALANCE;
 	}

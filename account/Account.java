@@ -1,4 +1,6 @@
-abstract class Account {
+package account;
+
+public abstract class Account {
 
 	private String name;
 	private final String pan;
@@ -71,4 +73,3 @@ abstract class Account {
 
 	public abstract double calculateIntrest();
 }
-

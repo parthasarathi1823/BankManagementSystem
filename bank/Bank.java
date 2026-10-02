@@ -1,7 +1,13 @@
+package bank;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-class Bank {
+import account.Account;
+import account.CurrentAccount;
+import account.SavingsAccount;
+
+public class Bank {
 
 	private final Map<Integer, Account> accounts;
 	private static int accountIndex = 1001;

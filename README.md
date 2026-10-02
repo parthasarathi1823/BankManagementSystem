@@ -1,6 +1,6 @@
 # 🏦 Bank Management System
 
-**Version:** `v1.1.0`
+**Version:** `v1.2.0`
 
 A **console-based Bank Management System built in Java** to practice Object-Oriented Programming, inheritance, polymorphism, collections, input handling, validation, and Git/GitHub development workflows.
 
@@ -63,18 +63,26 @@ Withdrawal and transfer limits are enforced by each account subclass via polymor
 ```text
 BankManagementSystem/
 │
-├── Account.java            # Abstract base account
-├── SavingsAccount.java     # Savings account (min balance + interest)
-├── CurrentAccount.java     # Current account (overdraft, no interest)
-├── Bank.java
-├── BankInterface.java      # Main entry + panel selection
-├── AdminInterface.java     # Admin panel
-├── CustomerInterface.java  # Customer panel
+├── account/                     # Account domain models
+│   ├── Account.java             # Abstract base account
+│   ├── SavingsAccount.java      # Savings (min balance + interest)
+│   └── CurrentAccount.java      # Current (overdraft, no interest)
+│
+├── bank/                        # Banking operations
+│   └── Bank.java                # Account store + transactions
+│
+├── interfaces/                  # Console UI panels
+│   ├── BankInterface.java       # Main entry + panel selection
+│   ├── AdminInterface.java      # Admin panel
+│   └── CustomerInterface.java   # Customer panel
+│
 ├── .gitignore
 └── README.md
 ```
 
-### `Account.java`
+### Package `account`
+
+#### `Account.java`
 
 Abstract base class for all account types. Stores:
 
@@ -90,15 +98,17 @@ Provides shared operations (`deposit`, `display`, getters/setters) and declares 
 * `getAccountType()` — returns the account type label
 * `calculateIntrest()` — returns calculated interest on current balance
 
-### `SavingsAccount.java`
+#### `SavingsAccount.java`
 
 Extends `Account`. Enforces a **₹1000 minimum balance** on withdrawals and calculates **4% interest** on the current balance.
 
-### `CurrentAccount.java`
+#### `CurrentAccount.java`
 
 Extends `Account`. Starts at **₹0** and allows withdrawals up to a **₹5000 overdraft limit**. Earns no interest.
 
-### `Bank.java`
+### Package `bank`
+
+#### `Bank.java`
 
 Handles banking operations and stores accounts in insertion order:
 
@@ -116,15 +126,17 @@ Also provides:
 * `changeActivity`
 * Validators: `validateName`, `validatePhone`, `validatePan`
 
-### `BankInterface.java`
+### Package `interfaces`
 
-Application entry point. Shows the main panel menu and routes to Admin or Customer.
+#### `BankInterface.java`
 
-### `AdminInterface.java`
+Application entry point (`interfaces.BankInterface`). Shows the main panel menu and routes to Admin or Customer.
+
+#### `AdminInterface.java`
 
 Admin console: list accounts, update customer details, toggle activity status.
 
-### `CustomerInterface.java`
+#### `CustomerInterface.java`
 
 Customer console: create account, deposit, withdraw, transfer, display account.
 
@@ -207,16 +219,16 @@ java -version
 javac -version
 ```
 
-Compile the project:
+Compile the project from the project root (so package folders resolve correctly):
 
 ```powershell
-javac *.java
+javac account/*.java bank/*.java interfaces/*.java
 ```
 
 Run the application:
 
 ```powershell
-java BankInterface
+java interfaces.BankInterface
 ```
 
 ## 🖥️ Menus
@@ -360,6 +372,19 @@ This project is being developed as a practical way to learn and apply:
 ---
 
 ## 📜 Changelog
+
+### [v1.2.0] — 2026-10-02
+
+Reorganized source into Java packages for clearer separation of concerns.
+
+#### Changed
+
+* Moved account classes into package `account` (`Account`, `SavingsAccount`, `CurrentAccount`)
+* Moved banking logic into package `bank` (`Bank`)
+* Moved console UI into package `interfaces` (`BankInterface`, `AdminInterface`, `CustomerInterface`)
+* Classes made `public` where needed for cross-package access
+* Compile/run commands updated for the packaged layout
+* README project structure and class docs updated to match packages
 
 ### [v1.1.0] — 2026-09-01
 

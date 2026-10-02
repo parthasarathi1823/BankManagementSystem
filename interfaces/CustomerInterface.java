@@ -1,4 +1,8 @@
+package interfaces;
+
 import java.util.Scanner;
+
+import bank.Bank;
 
 public class CustomerInterface {
 

@@ -1,4 +1,6 @@
-class CurrentAccount extends Account{
+package account;
+
+public class CurrentAccount extends Account {
 
 	private static final double OVERDRAFT_LIMIT = 5000.0;
 	private static final String ACCOUNT_TYPE = "Current Account";
